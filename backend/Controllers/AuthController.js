@@ -3,35 +3,52 @@ const jwt = require('jsonwebtoken');
 const UserModel = require("../Models/User");
 
 const signup = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+  try {
+    const { name, lastName, email, password } = req.body;
 
-        // Check if user already exists
-        const user = await UserModel.findOne({ email });
-        if (user) {
-            return res.status(409).json({ 
-                message: 'User already exists, you can login', 
-                success: false 
-            });
-        }
-
-        // Create new user
-        const userModel = new UserModel({ name, email, password });
-        userModel.password = await bcrypt.hash(password, 10);
-        await userModel.save();
-
-        res.status(201).json({
-            message: 'Signup successful',
-            success: true
-        });
-
-    } catch (err) {
-        console.error(err); // Log the error for debugging purposes
-        res.status(500).json({
-            message: 'Internal server error ',
-            success: false
-        });
+    // Check required fields
+    if (!name || !lastName || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
+
+    // Check if user already exists
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ 
+        message: "User already exists, you can login" 
+      });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save new user
+    const newUser = new UserModel({
+      name,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+
+    await newUser.save();
+
+    // Create token
+    const token = jwt.sign(
+      { id: newUser._id, email: newUser.email },
+      process.env.JWT_SECRET || "defaultsecret",
+      { expiresIn: "1h" }
+    );
+
+    res.status(201).json({
+      message: "Signup successful",
+      user: { id: newUser._id, name: newUser.name, lastName: newUser.lastName, email: newUser.email },
+      token,
+    });
+
+  } catch (err) {
+    console.error("Signup Error:", err); // 🔴 log full error
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  }
 };
 
 const login = async (req, res) => {

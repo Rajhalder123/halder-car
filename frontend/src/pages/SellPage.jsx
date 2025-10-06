@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import Navbar from "./Navbar";
+
 const SellPage = () => {
   const [formData, setFormData] = useState({
     carMake: "",
@@ -15,7 +17,10 @@ const SellPage = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [images, setImages] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
+  // Handle text input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -24,21 +29,55 @@ const SellPage = () => {
     }));
   };
 
+  // Handle image uploads
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    const selectedFiles = files.slice(0, 10); // Max 10 images
+
+    setImages(selectedFiles);
+
+    const previews = selectedFiles.map((file) => URL.createObjectURL(file));
+    setImagePreviews(previews);
+  };
+
+  // Remove image preview
+  const removeImage = (index) => {
+    const newImages = [...images];
+    const newPreviews = [...imagePreviews];
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+  };
+
+  // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      const formDataToSend = new FormData();
+
+      // Append text fields
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      // Append images
+      images.forEach((image) => {
+        formDataToSend.append("images", image);
+      });
+
       const response = await fetch("http://localhost:8080/sell", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
 
       if (!response.ok) throw new Error("Failed to submit");
 
-      alert("Thank you! Your car listing has been submitted for review.");
+      alert("✅ Thank you! Your car listing has been submitted for review.");
 
+      // Reset form
       setFormData({
         carMake: "",
         carModel: "",
@@ -51,399 +90,265 @@ const SellPage = () => {
         email: "",
         phone: "",
       });
+      setImages([]);
+      setImagePreviews([]);
     } catch (error) {
       console.error(error);
-      alert("Something went wrong. Please try again later.");
+      alert("❌ Something went wrong. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Styles
-  const container = {
-    maxWidth: 720,
-    margin: "60px auto",
-    padding: "0 20px",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
-    color: "#333",
-    lineHeight: 1.6,
-  };
-
-  const card = {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    boxShadow: "0 4px 18px rgba(0,0,0,0.1)",
-    overflow: "hidden",
-  };
-
-  const header = {
-    background: "linear-gradient(135deg,rgb(213, 224, 108), #007fff)",
-    color: "#ffff",
-    padding: "20px 20px",
-    textAlign: "center",
-  };
-
-  const title = {
-    fontSize: 28,
-    fontWeight: 700,
-    margin: 0,
-  };
-
-  const subtitle = {
-    marginTop: 8,
-    fontSize: 16,
-    opacity: 0.9,
-  };
-
-  const body = {
-    padding: "30px 25px 40px",
-  };
-
-  const formGroup = {
-    marginBottom: 20,
-  };
-
-  const label = {
-    display: "block",
-    marginBottom: 8,
-    fontWeight: 600,
-    fontSize: 14,
-    color: "#222",
-  };
-
-  const input = {
-    width: "100%",
-    padding: "12px 15px",
-    borderRadius: 8,
-    border: "1px solid #ccc",
-    fontSize: 16,
-    boxSizing: "border-box",
-    transition: "border-color 0.3s ease",
-  };
-
-  const inputFocus = {
-    borderColor: "#0052cc",
-    outline: "none",
-    boxShadow: "0 0 6px rgba(0, 82, 204, 0.3)",
-  };
-
-  const textarea = {
-    ...input,
-    minHeight: 100,
-    resize: "vertical",
-  };
-
-  const select = {
-    ...input,
-    appearance: "none",
-    backgroundColor: "#fff",
-    backgroundImage:
-      "url(\"data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='none' stroke='%230052cc' stroke-width='1.5' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E\")",
-    backgroundRepeat: "no-repeat",
-    backgroundPosition: "right 10px center",
-    backgroundSize: "8px 10px",
-  };
-
-  const button = {
-    width: "100%",
-    padding: "14px 0",
-    borderRadius: 8,
-    fontSize: 18,
-    fontWeight: 600,
-    color: "#fff",
-    backgroundColor: isSubmitting ? "#8ab1ff" : "#0052cc",
-    border: "none",
-    cursor: isSubmitting ? "not-allowed" : "pointer",
-    transition: "background-color 0.3s ease",
-    marginTop: 30,
-  };
-
-  const sectionTitle = {
-    color: "#0052cc",
-    fontSize: 20,
-    fontWeight: 700,
-    borderBottom: "2px solid #0052cc",
-    paddingBottom: 8,
-    marginBottom: 24,
-    marginTop: 40,
-  };
-
-  const infoCardsContainer = {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 20,
-    marginTop: 30,
-    flexWrap: "wrap",
-  };
-
-  const infoCard = {
-    flex: "1 1 30%",
-    backgroundColor: "#f9faff",
-    borderRadius: 10,
-    padding: 20,
-    textAlign: "center",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-  };
-
-  const infoIcon = {
-    fontSize: 36,
-    color: "#0052cc",
-    marginBottom: 12,
-  };
-
   return (
-    <div style={container}>
-      <div style={card}>
-        <header style={header}>
-          <Link to="/">
-  <img
-    src="/assets/img/Raj logo.jpg"
-    alt="Logo"
-    style={{
-      width: "80px",
-      height: "90px",
-      borderRadius: "70%",
-      objectFit: "cover",
-      color: "blueviolet",
-      marginRight: "10px",
-      cursor: "pointer", // add pointer cursor to show it's clickable
-    }}
-  />
-</Link>
+    <div className="max-w-4xl mx-auto my-12 px-4">
+      {/* Fixed Navbar */}
+      <header className="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-900 shadow-md">
+        <Navbar />
+      </header>
 
-          <h2 style={title}>Sell Your Car</h2>
-          <p style={subtitle}>
+      <div className="bg-white shadow-2xl rounded-xl overflow-hidden mt-24">
+        <div className="bg-gradient-to-r from-green-500 to-emerald-700 text-white p-6 text-center">
+          <h2 className="text-3xl font-bold">Sell Your Car</h2>
+          <p className="text-sm opacity-90 mt-1">
             Fill out the form below to list your car for sale
           </p>
-        </header>
-        <section style={body}>
-          <form onSubmit={handleSubmit}>
-            {/* Car Information */}
-            <h3 style={sectionTitle}>Car Information</h3>
+        </div>
 
-            <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-              <div style={{ flex: "1 1 48%" }}>
-                <label style={label} htmlFor="carMake">
-                  Car Make *
-                </label>
+        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Car Information */}
+          <div>
+            <h3 className="text-xl font-semibold text-green-700 border-b pb-2 mb-4">
+              Car Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="font-medium">Car Make *</label>
                 <input
-                  id="carMake"
-                  name="carMake"
                   type="text"
+                  name="carMake"
                   value={formData.carMake}
                   onChange={handleInputChange}
-                  placeholder="e.g., Toyota, Honda, BMW"
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
-
-              <div style={{ flex: "1 1 48%" }}>
-                <label style={label} htmlFor="carModel">
-                  Car Model *
-                </label>
+              <div>
+                <label className="font-medium">Car Model *</label>
                 <input
-                  id="carModel"
-                  name="carModel"
                   type="text"
+                  name="carModel"
                   value={formData.carModel}
                   onChange={handleInputChange}
-                  placeholder="e.g., Camry, Civic, X5"
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: 20,
-                flexWrap: "wrap",
-                marginTop: 20,
-              }}
-            >
-              <div style={{ flex: "1 1 30%" }}>
-                <label style={label} htmlFor="year">
-                  Year *
-                </label>
+              <div>
+                <label className="font-medium">Year *</label>
                 <input
-                  id="year"
-                  name="year"
                   type="number"
+                  name="year"
                   value={formData.year}
                   onChange={handleInputChange}
                   min="1990"
                   max="2025"
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
-
-              <div style={{ flex: "1 1 30%" }}>
-                <label style={label} htmlFor="mileage">
-                  Mileage *
-                </label>
+              <div>
+                <label className="font-medium">Mileage *</label>
                 <input
-                  id="mileage"
-                  name="mileage"
                   type="number"
+                  name="mileage"
                   value={formData.mileage}
                   onChange={handleInputChange}
-                  placeholder="Miles"
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
-
-              <div style={{ flex: "1 1 30%" }}>
-                <label style={label} htmlFor="price">
-                  Asking Price *
-                </label>
+              <div>
+                <label className="font-medium">Asking Price *</label>
                 <input
-                  id="price"
-                  name="price"
                   type="number"
+                  name="price"
                   value={formData.price}
                   onChange={handleInputChange}
-                  placeholder="$"
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
+              </div>
+              <div>
+                <label className="font-medium">Condition *</label>
+                <select
+                  name="condition"
+                  value={formData.condition}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 w-full p-2 border rounded-md"
+                >
+                  <option value="">Select condition</option>
+                  <option value="excellent">Excellent</option>
+                  <option value="good">Good</option>
+                  <option value="fair">Fair</option>
+                  <option value="poor">Poor</option>
+                </select>
               </div>
             </div>
 
-            <div style={{ marginTop: 20, maxWidth: 300 }}>
-              <label style={label} htmlFor="condition">
-                Condition *
-              </label>
-              <select
-                id="condition"
-                name="condition"
-                value={formData.condition}
-                onChange={handleInputChange}
-                required
-                style={select}
-                onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-              >
-                <option value="">Select condition</option>
-                <option value="excellent">Excellent</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
-              </select>
+            {/* Image Upload */}
+            <div className="mt-8">
+              <h3 className="text-2xl font-semibold text-green-700 border-b-2 border-green-200 pb-2 mb-6">
+                Car Images *
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block mb-3 font-medium text-gray-700">
+                    Upload Photos (Max 10)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg 
+                    file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 
+                    file:bg-green-600 file:text-white hover:file:bg-green-700 
+                    file:font-medium cursor-pointer"
+                  />
+                  <p className="text-sm text-gray-500 mt-2">
+                    📸 Upload clear photos from different angles. The first photo
+                    will be the main image.
+                  </p>
+                </div>
+
+                {/* Image Preview */}
+                {imagePreviews.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={preview}
+                          alt={`Car ${index + 1}`}
+                          className="w-full h-40 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                        />
+                        {index === 0 && (
+                          <span className="absolute top-2 left-2 bg-green-600 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-md">
+                            Main
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md font-bold text-lg"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-400">
+                    <p>No images uploaded yet</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div style={{ marginTop: 20 }}>
-              <label style={label} htmlFor="description">
-                Additional Details
-              </label>
+            {/* Description */}
+            <div className="md:col-span-2 mt-8">
+              <label className="font-medium">Additional Details</label>
               <textarea
-                id="description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
-                placeholder="Describe any special features or issues"
-                style={textarea}
-              />
+                rows={4}
+                className="mt-1 w-full p-2 border rounded-md"
+              ></textarea>
             </div>
+          </div>
 
-            {/* Contact Information */}
-            <h3 style={sectionTitle}>Contact Information</h3>
-
-            <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-              <div style={{ flex: "1 1 48%" }}>
-                <label style={label} htmlFor="contactName">
-                  Your Name *
-                </label>
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-xl font-semibold text-green-700 border-b pb-2 mb-4">
+              Contact Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="font-medium">Your Name *</label>
                 <input
-                  id="contactName"
-                  name="contactName"
                   type="text"
+                  name="contactName"
                   value={formData.contactName}
                   onChange={handleInputChange}
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
-
-              <div style={{ flex: "1 1 48%" }}>
-                <label style={label} htmlFor="email">
-                  Email Address *
-                </label>
+              <div>
+                <label className="font-medium">Email Address *</label>
                 <input
-                  id="email"
-                  name="email"
                   type="email"
+                  name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  style={input}
-                  onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                  onBlur={(e) => (e.target.style.borderColor = "#ccc")}
+                  className="mt-1 w-full p-2 border rounded-md"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label className="font-medium">Phone Number *</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 w-full p-2 border rounded-md"
                 />
               </div>
             </div>
+          </div>
 
-            <div style={{ marginTop: 20, maxWidth: 300 }}>
-              <label style={label} htmlFor="phone">
-                Phone Number *
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleInputChange}
-                required
-                style={input}
-                onFocus={(e) => (e.target.style.borderColor = "#0052cc")}
-                onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-              />
-            </div>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full py-3 rounded-lg text-white font-semibold transition ${
+              isSubmitting
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-800"
+            }`}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Listing"}
+          </button>
 
-            <button type="submit" disabled={isSubmitting} style={button}>
-              {isSubmitting ? "Submitting..." : "Submit Listing"}
-            </button>
-          </form>
-
-          {/* Optional Info Cards - you can customize or remove */}
-          <div style={infoCardsContainer}>
-            <div style={infoCard}>
-              <div style={infoIcon}>🚗</div>
-              <h4>Wide Reach</h4>
-              <p>Your car will be visible to thousands of potential buyers.</p>
-            </div>
-            <div style={infoCard}>
-              <div style={infoIcon}>🔒</div>
-              <h4>Secure Process</h4>
-              <p>
-                We ensure your data and transaction are safe and confidential.
+          {/* Info Cards */}
+          <div className="mt-10 grid md:grid-cols-3 gap-6 text-center">
+            <div className="bg-green-50 p-4 rounded-xl shadow-sm">
+              <div className="text-3xl">🚗</div>
+              <h4 className="font-semibold mt-2">Wide Reach</h4>
+              <p className="text-sm text-gray-600">
+                Your car will be visible to thousands of potential buyers.
               </p>
             </div>
-            <div style={infoCard}>
-              <div style={infoIcon}>⚡</div>
-              <h4>Fast Sale</h4>
-              <p>
+            <div className="bg-green-50 p-4 rounded-xl shadow-sm">
+              <div className="text-3xl">🔒</div>
+              <h4 className="font-semibold mt-2">Secure Process</h4>
+              <p className="text-sm text-gray-600">
+                We ensure your data and transactions are safe and confidential.
+              </p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-xl shadow-sm">
+              <div className="text-3xl">⚡</div>
+              <h4 className="font-semibold mt-2">Fast Sale</h4>
+              <p className="text-sm text-gray-600">
                 Get competitive offers quickly and sell your car hassle-free.
               </p>
             </div>
           </div>
-        </section>
+        </form>
       </div>
     </div>
   );

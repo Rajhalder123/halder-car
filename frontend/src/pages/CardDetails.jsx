@@ -1,147 +1,151 @@
-import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
-const ecoFriendlyCars = [
-  {
-    id: 1,
-    name: 'Tesla Model 3',
-    batteryRange: '358 miles',
-    chargeTime: '8.5 hours (Level 2)',
-    price: '$39,990',
-    description: 'High-performance electric sedan with autopilot and minimalist design.',
-    image: '/assets/img/tes.png',
-  },
-  {
-    id: 2,
-    name: 'Nissan Leaf',
-    batteryRange: '226 miles',
-    chargeTime: '7.5 hours (Level 2)',
-    price: '$27,400',
-    description: 'Affordable electric car with smooth driving experience and advanced safety features.',
-    image: '/assets/img/nisan.png',
-  },
-  {
-    id: 3,
-    name: 'Chevrolet Bolt EV',
-    batteryRange: '259 miles',
-    chargeTime: '10 hours (Level 2)',
-    price: '$31,000',
-    description: 'Compact electric hatchback with excellent range and quick acceleration.',
-    image: '/assets/img/che.png',
-  },
-
-  {
-    id: 4,
-    name: 'BMW i3',
-    batteryRange: '259 miles',
-    chargeTime: '10 hours (Level 2)',
-    price: '$31,000',
-    description: 'Compact electric hatchback with excellent range and quick acceleration.',
-    image: '/assets/img/bmw i3.png',
-  },
+const carDetails = [
+  { id: 1, name: "Tesla Model S", brand: "Tesla", type: "Electric Cars", imgSrc: "/assets/img/tes.png" },
+  { id: 2, name: "BMW i3", brand: "BMW", type: "Sedans", imgSrc: "/assets/img/bmw i3.png" },
+  { id: 3, name: "Hyundai Ioniq", brand: "Tesla", type: "Electric Cars", imgSrc: "/assets/img/ioniq.jpg" },
+  { id: 4, name: "MG Cyberster", brand: "Morris Garages", type: "Electric Cars", imgSrc: "/assets/img/mg.jpg" },
+  { id: 5, name: "MG Comet EV", brand: "Morris Garages", type: "Electric Cars", imgSrc: "/assets/img/mg1.jpg" },
+  { id: 6, name: "Ford Mustang Mach-E", brand: "Ford", type: "Electric Cars", imgSrc: "/assets/img/Ford1.jpg" },
+  { id: 7, name: "Kia EV6", brand: "Kia", type: "Electric Cars", imgSrc: "/assets/img/kia1-ev6.jpg" },
+  { id: 8, name: "Audi Q4 e-tron", brand: "Audi", type: "SUVs", imgSrc: "/assets/img/q4-etron.jpg" },
+  { id: 9, name: "Mercedes-Benz EQC", brand: "Mercedes-Benz", type: "SUVs", imgSrc: "/assets/img/eqc.jpg" },
+  { id: 10, name: "Honda Civic", brand: "Honda", type: "Sedans", imgSrc: "/assets/img/civic.jpg" },
+  { id: 11, name: "Tata Nexon EV", brand: "Tata", type: "Electric Cars", imgSrc: "/assets/img/nexon-ev.jpg" },
+  { id: 12, name: "Mahindra XUV400", brand: "Mahindra", type: "Electric Cars", imgSrc: "/assets/img/xuv400.jpg" },
 ];
-
-const positiveDescriptions = {
-  1: "The Tesla Model 3 leads the electric revolution with impressive range, innovative autopilot features, and a sleek design that embodies the future of driving.",
-  2: "Nissan Leaf offers an affordable and reliable electric ride, ideal for everyday city commuting with zero emissions and impressive efficiency.",
-  3: "Hyundai Ioniq 5 is a spacious and futuristic SUV combining ultra-fast charging with eye-catching style and comfort.",
-  4:"The BMW i3 stands out with its futuristic design, sustainable materials, and quick acceleration — a premium urban EV offering comfort, innovation, and responsible driving."
-  // Add descriptions for others as needed
-};
 
 const CarDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const car = ecoFriendlyCars.find((c) => c.id === parseInt(id));
+  // ✅ Show/hide form
+  const [showForm, setShowForm] = useState(false);
+
+  // ✅ All user fields
+  const [buyerName, setBuyerName] = useState("");
+  const [buyerEmail, setBuyerEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [pincode, setPincode] = useState("");
+  const [payment, setPayment] = useState("Cash on Delivery");
+
+  const car = carDetails.find((c) => c.id === parseInt(id));
 
   if (!car) {
     return (
-      <main className="container py-5 text-center">
-        <h2>Car not found</h2>
-        <Link to="/" className="btn btn-primary mt-3">
-          Back to list
-        </Link>
-      </main>
+      <div className="p-8 text-center text-red-500 font-semibold text-xl">
+        Car not found.
+      </div>
     );
   }
 
+  const handleSchedule = () => {
+    navigate("/schedule-drive", { state: { carName: car.name } });
+  };
+
+  const handlePurchase = async () => {
+    if (!buyerName || !buyerEmail || !phone || !address || !city || !pincode) {
+      alert("⚠️ Please fill all fields before confirming the purchase.");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/buy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          carId: car.id,
+          carName: car.name,
+          name: buyerName,
+          email: buyerEmail,
+          phone,
+          address,
+          city,
+          pincode,
+          payment,
+        }),
+      });
+
+      if (!response.ok) throw new Error("Server error");
+
+      navigate("/confirm-purchase", {
+        state: {
+          carName: car.name,
+          price: "₹24,99,000",
+          buyerName,
+          buyerEmail,
+          phone,
+          address,
+          city,
+          pincode,
+          payment,
+        },
+      });
+    } catch (error) {
+      console.error("❌ Error saving purchase:", error);
+      alert("Failed to confirm purchase. Try again.");
+    }
+  };
+
   return (
-    <>
-      <style>{`
-        main.container {
-          max-width: 900px;
-        }
+    <div className="max-w-4xl mx-auto p-6 mt-8 bg-white shadow-xl rounded-2xl">
+      <div className="flex flex-col md:flex-row items-center gap-6">
+        <img src={car.imgSrc} alt={car.name} className="w-full md:w-1/2 h-72 object-cover rounded-lg" />
 
-        h1 {
-          color: #00796b;
-          font-weight: 700;
-          margin-bottom: 1rem;
-        }
+        <div className="flex-1">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">{car.name}</h2>
+          <p className="text-gray-600 text-lg mb-1"><strong>Brand:</strong> {car.brand}</p>
+          <p className="text-gray-600 text-lg mb-3"><strong>Type:</strong> {car.type}</p>
+          <p className="text-xl font-semibold text-green-700 mb-6">Price: ₹24,99,000</p>
 
-        .lead.text-success {
-          font-size: 1.25rem;
-          font-weight: 500;
-          opacity: 0.85;
-        }
+          {/* Step 1: Show buttons only */}
+          {!showForm && (
+            <div className="flex gap-4">
+              <button
+                onClick={handleSchedule}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              >
+                Schedule Test Drive
+              </button>
+              <button
+                onClick={() => setShowForm(true)}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Confirm Purchase
+              </button>
+            </div>
+          )}
 
-        .card {
-          border-radius: 15px;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-        }
+          {/* Step 2: Show input fields only after confirm */}
+          {showForm && (
+            <div className="mt-6 space-y-4">
+              <input type="text" placeholder="Your Name" value={buyerName} onChange={(e) => setBuyerName(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="email" placeholder="Your Email" value={buyerEmail} onChange={(e) => setBuyerEmail(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" placeholder="Phone Number" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" placeholder="Full Address" value={address} onChange={(e) => setAddress(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" placeholder="Pincode" value={pincode} onChange={(e) => setPincode(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
 
-        .list-group-item {
-          font-weight: 600;
-          color: #004d40;
-        }
+              {/* Payment Selection */}
+              <select value={payment} onChange={(e) => setPayment(e.target.value)} className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="Cash on Delivery">Cash on Delivery</option>
+                <option value="Online Payment">Online Payment</option>
+              </select>
 
-        button.btn-secondary {
-          background-color: #00796b;
-          border: none;
-          font-weight: 600;
-          transition: background-color 0.3s ease;
-        }
-        button.btn-secondary:hover {
-          background-color: #004d40;
-        }
-
-        a.btn-primary {
-          background-color: #00796b;
-          border: none;
-          font-weight: 600;
-          transition: background-color 0.3s ease;
-        }
-        a.btn-primary:hover {
-          background-color: #004d40;
-          text-decoration: none;
-        }
-      `}</style>
-
-      <main className="container py-5">
-        <button onClick={() => navigate(-1)} className="btn btn-secondary mb-4">
-          ← Back
-        </button>
-        <div className="card shadow-sm p-4">
-          <img
-            src={car.image}
-            alt={car.name}
-            className="img-fluid rounded mb-4"
-            style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }}
-            onError={(e) => (e.target.src = '/images/default-car.jpg')}
-          />
-          <h1>{car.name}</h1>
-          <p className="lead text-success mb-3">{positiveDescriptions[car.id]}</p>
-          <ul className="list-group list-group-flush mb-4">
-            <li className="list-group-item"><strong>Range:</strong> {car.batteryRange}</li>
-            <li className="list-group-item"><strong>Charge Time:</strong> {car.chargeTime}</li>
-            <li className="list-group-item"><strong>Price:</strong> {car.price}</li>
-          </ul>
-          <Link to="/" className="btn btn-primary">
-            Back to Eco-Friendly Cars
-          </Link>
+              <button
+                onClick={handlePurchase}
+                className="w-full px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Submit Purchase
+              </button>
+            </div>
+          )}
         </div>
-      </main>
-    </>
+      </div>
+    </div>
   );
 };
 

@@ -18,19 +18,7 @@ function Home() {
       {/* Navbar */}
      <nav className="navbar navbar-expand-lg">
   <div className="container">
-    {/* <NavLink to="/" className="navbar-brand d-flex align-items-center">
-      <img
-        src="/assets/img/logo.png"
-        alt="Logo"
-        className="img"
-        style={{
-          width: "200px",
-          height: "100px",
-          objectFit: "contain",
-          marginRight: "8px",
-        }}
-      />
-    </NavLink> */}
+    
 
     <button
       className="navbar-toggler"
@@ -47,7 +35,7 @@ function Home() {
     <div className="collapse navbar-collapse" id="NavbarIcon">
       <ul className="navbar-nav ms-auto">
         <li className="nav-item">
-          <a href="#upcoming-cars" className="nav-link">
+          <a href="#EcoFrindly-cars" className="nav-link">
             🚗 New Upcoming Cars
           </a>
         </li>
@@ -88,26 +76,6 @@ function Home() {
         </div>
       </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      {/* Popular Brands Section */}
      {/* Popular Brands Section */}
 <section
   style={{
@@ -164,18 +132,6 @@ function Home() {
     </div>
   </div>
 </section>
-
-
-
-
-     
-
-
-
-
-
-
-
 
 
 

@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Tesla Model S",
+    "brand": "Tesla",
+    "type": "Electric Cars",
+    "fuel": "Electric",
+    "range": "396 miles",
+    "price": "$89,990",
+    "rating": 4.9,
+    "imgSrc": "/assets/img/tes.png"
+  },
+  {
+    "id": 2,
+    "name": "BMW i3",
+    "brand": "BMW",
+    "type": "Sedans",
+    "fuel": "Electric",
+    "range": "153 miles",
+    "price": "$44,450",
+    "rating": 4.5,
+    "imgSrc": "/assets/img/bmw i3.png"
+  },
+  {
+    "id": 3,
+    "name": "Nissan Leaf",
+    "brand": "Nissan",
+    "type": "Hatchback",
+    "fuel": "Electric",
+    "range": "149 miles",
+    "price": "$28,040",
+    "rating": 4.3,
+    "imgSrc": "/assets/img/nissan-leaf.png"
+  },
+  {
+    "id": 4,
+    "name": "Toyota Prius",
+    "brand": "Toyota",
+    "type": "Hybrid",
+    "fuel": "Hybrid",
+    "range": "56 MPG",
+    "price": "$27,450",
+    "rating": 4.7,
+    "imgSrc": "/assets/img/toyota-prius.png"
+  }
+]

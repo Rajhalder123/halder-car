@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Tesla Model S",
+    "brand": "Tesla",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/tes.png"
+  },
+  {
+    "id": 2,
+    "name": "BMW i3",
+    "brand": "BMW",
+    "type": "Sedans",
+    "imgSrc": "/assets/img/bmw i3.png"
+  },
+  {
+    "id": 3,
+    "name": "Hyundai Ioniq",
+    "brand": "Tesla",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/ioniq.jpg"
+  },
+  {
+    "id": 4,
+    "name": "MG Cyberster",
+    "brand": "Morris Garages",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/mg.jpg"
+  },
+  {
+    "id": 5,
+    "name": "MG Comet EV",
+    "brand": "Morris Garages",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/mg1.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Ford Mustang Mach-E",
+    "brand": "Ford",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/Ford1.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Kia EV6",
+    "brand": "Kia",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/kia1-ev6.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Audi Q4 e-tron",
+    "brand": "Audi",
+    "type": "SUVs",
+    "imgSrc": "/assets/img/q4-etron.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Mercedes-Benz EQC",
+    "brand": "Mercedes-Benz",
+    "type": "SUVs",
+    "imgSrc": "/assets/img/eqc.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Honda Civic",
+    "brand": "Honda",
+    "type": "Sedans",
+    "imgSrc": "/assets/img/civic.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Tata Nexon EV",
+    "brand": "Tata",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/nexon-ev.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Mahindra XUV400",
+    "brand": "Mahindra",
+    "type": "Electric Cars",
+    "imgSrc": "/assets/img/xuv400.jpg"
+  }
+]

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 
 const SignInPage = () => {
+  const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -40,21 +41,22 @@ const SignInPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (isSignUp && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
+      setLoading(false);
       return;
     }
 
     try {
       const url = isSignUp
-        ? "http://localhost:8080/auth/signup"
-        : "http://localhost:8080/auth/login";
+        ? "https://car-backend-1-kjvq.onrender.com/auth/signup"
+        : "https://car-backend-1-kjvq.onrender.com/auth/login";
 
       const body = isSignUp
         ? {
-            name:
-              formData.firstName.trim() + " " + formData.lastName.trim(),
+            name: formData.firstName.trim() + " " + formData.lastName.trim(),
             email: formData.email,
             password: formData.password,
           }
@@ -74,6 +76,7 @@ const SignInPage = () => {
         data = await response.json();
       } catch {
         alert("Received invalid response from server.");
+        setLoading(false);
         return;
       }
 
@@ -84,10 +87,16 @@ const SignInPage = () => {
             : "Sign in successful!"
         );
 
-        if (!isSignUp && data.jwtToken) {
-          localStorage.setItem("authToken", data.jwtToken);
+        if (!isSignUp && data.token) {
+          localStorage.setItem("authToken", data.token);
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("userName", data.name);
+          
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 100);
+
           navigate("/");
         }
 
@@ -106,209 +115,133 @@ const SignInPage = () => {
       }
     } catch (error) {
       alert("Network error: " + error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      className="container-fluid"
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      }}
-    >
-      <div
-        className="row justify-content-center align-items-center"
-        style={{ minHeight: "100vh" }}
-      >
-        <div className="col-lg-5 col-md-7 col-sm-9">
-          <div className="card shadow-lg border-0">
-            <div className="card-body p-5">
-              <div className="text-center mb-4">
-                <div className="mb-3">
-                  <NavLink to="/">
-                    <img
-                      src="/assets/img/Raj logo.jpg"
-                      alt="Logo"
-                      style={{
-                        width: "80px",
-                        height: "90px",
-                        borderRadius: "70%",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </NavLink>
-                </div>
+    <div className="min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full bg-green-50 dark:bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 className="text-3xl font-bold text-green-600 dark:text-green-400 text-center mb-2">
+          {isSignUp ? "Create Account" : "Welcome Back"}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
+          {isSignUp ? "Join EcoCar today" : "Sign in to your account"}
+        </p>
 
-                <h2 className="text-primary mb-2">
-                  {isSignUp ? "Create Account" : "Welcome Back"}
-                </h2>
-                <p className="text-muted">
-                  {isSignUp
-                    ? "Join our car marketplace today"
-                    : "Sign in to your account"}
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                {isSignUp && (
-                  <div className="row mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label text-dark">
-                        First Name *
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        placeholder="John"
-                        required
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <label className="form-label text-dark">
-                        Last Name *
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="lastName"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        placeholder="Doe"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="mb-3">
-                  <label className="form-label text-dark">Email Address *</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="john@example.com"
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label text-dark">Password *</label>
-                  <div className="input-group">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      className="form-control"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      placeholder="Enter your password"
-                      required
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-outline-secondary"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={
-                        showPassword ? "Hide password" : "Show password"
-                      }
-                    >
-                      {showPassword ? "🙈" : "👁️"}
-                    </button>
-                  </div>
-                </div>
-
-                {isSignUp && (
-                  <div className="mb-3">
-                    <label className="form-label text-dark">
-                      Confirm Password *
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleInputChange}
-                      placeholder="Confirm your password"
-                      required
-                    />
-                  </div>
-                )}
-
-                {!isSignUp && (
-                  <div className="d-flex justify-content-between align-items-center mb-4">
-                    <div className="form-check text-dark">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="rememberMe"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="rememberMe"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-                    <button
-                      type="button"
-                      className="btn btn-link p-0 text-decoration-none"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-lg w-100 mb-4"
-                >
-                  {isSignUp ? "Create Account" : "Sign In"}
-                </button>
-              </form>
-
-              <div className="text-center">
-                <p className="text-muted mb-0">
-                  {isSignUp
-                    ? "Already have an account?"
-                    : "Don't have an account?"}{" "}
-                  <button
-                    type="button"
-                    className="btn btn-link p-0 ms-1 text-decoration-none"
-                    onClick={toggleMode}
-                  >
-                    {isSignUp ? "Sign In" : "Sign Up"}
-                  </button>
-                </p>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {isSignUp && (
+            <div className="flex gap-4">
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                placeholder="First Name"
+                required
+                className="w-1/2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+              />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder="Last Name"
+                required
+                className="w-1/2 px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+              />
             </div>
+          )}
+
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Email"
+            required
+            className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+          />
+
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
+              placeholder="Password"
+              required
+              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-sm text-gray-500"
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
           </div>
 
-          <div className="text-center mt-4">
-            <p className="text-white-50 small">
-              By signing up, you agree to our{" "}
-              <button
-                type="button"
-                className="btn btn-link p-0 ms-1 text-white text-decoration-underline small"
-              >
-                Terms of Service
-              </button>{" "}
-              and{" "}
-              <button
-                type="button"
-                className="btn btn-link p-0 ms-1 text-white text-decoration-underline small"
-              >
-                Privacy Policy
+          {isSignUp && (
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              placeholder="Confirm Password"
+              required
+              className="w-full px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900"
+            />
+          )}
+
+          {!isSignUp && (
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="accent-green-600"
+                />
+                Remember me
+              </label>
+              <button type="button" className="text-green-600 hover:underline">
+                Forgot password?
               </button>
-            </p>
-          </div>
-        </div>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-2 px-4 rounded-md text-white bg-green-600 hover:bg-green-700 transition"
+          >
+            {loading
+              ? isSignUp
+                ? "Creating Account..."
+                : "Signing In..."
+              : isSignUp
+              ? "Create Account"
+              : "Sign In"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-6">
+          {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
+          <button
+            type="button"
+            onClick={toggleMode}
+            className="text-green-600 hover:underline font-medium"
+          >
+            {isSignUp ? "Sign In" : "Sign Up"}
+          </button>
+        </p>
+        <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-4">
+          By signing up, you agree to our{" "}
+          <span className="underline">Terms of Service</span> and{" "}
+          <span className="underline">Privacy Policy</span>.
+        </p>
       </div>
     </div>
   );
