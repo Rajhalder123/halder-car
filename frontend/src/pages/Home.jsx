@@ -167,27 +167,26 @@ const Home = () => {
       <Navbar />
 
       {/* ================= HERO SECTION ================= */}
- <section
-  className="relative w-full min-h-[90vh] bg-cover bg-center flex items-start justify-center px-4 pt-16 sm:pt-24"
-  style={{ backgroundImage: "url('/assets/visualcar.png')" }}
->
-  {/* Dark overlay */}
-  <div className="absolute inset-0 bg-black/50 z-0"></div>
+      <section
+        className="relative w-full min-h-[90vh] bg-cover bg-center flex items-start justify-center px-4 pt-16 sm:pt-24"
+        style={{ backgroundImage: "url('/assets/visualcar.png')" }}
+      >
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
 
-  {/* Hero content moved up */}
-  <div className="relative z-10 text-center text-white max-w-4xl p-6 sm:p-10 md:p-12 rounded-lg">
-    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-md">
-      Drive <span className="text-green-400">Electric.</span>
-      <br />
-      Drive the <span className="text-green-400">Future.</span>
-    </h1>
-    <p className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mt-4">
-      Discover premium eco-friendly electric vehicles with expert guidance and services.
-    </p>
-  </div>
-</section>
-
-
+        {/* Hero content moved up */}
+        <div className="relative z-10 text-center text-white max-w-4xl p-6 sm:p-10 md:p-12 rounded-lg">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-md">
+            Drive <span className="text-green-400">Electric.</span>
+            <br />
+            Drive the <span className="text-green-400">Future.</span>
+          </h1>
+          <p className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mt-4">
+            Discover premium eco-friendly electric vehicles with expert guidance
+            and services.
+          </p>
+        </div>
+      </section>
 
       {/* ================= CARS FILTER SECTION ================= */}
       <section className="py-12 bg-gray-50 text-center min-h-screen">
@@ -210,7 +209,7 @@ const Home = () => {
           ))}
         </div>
         <>
-          {/* 🔍 Centered Stylish Search Bar */}
+          {/*  Centered Stylish Search Bar */}
           <div className="flex justify-center mb-8">
             <div className="flex items-center bg-white border-2 border-green-300 rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-md">
               <Search className="text-green-500 w-5 h-5" />

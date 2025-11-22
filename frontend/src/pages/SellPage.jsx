@@ -13,30 +13,37 @@ const SellPage = () => {
     contactName: "",
     email: "",
     phone: "",
-    image: null,
   });
 
-  const [preview, setPreview] = useState(null);
+  const [images, setImages] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Handle form text input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }));
-      setPreview(URL.createObjectURL(file));
-    }
+  // Handle multiple images
+  const handleImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages((prev) => [...prev, ...files]);
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+    setPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  // Remove an image before submit
+  const handleRemoveImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.image) {
-      alert("❌ Please upload an image");
+    if (images.length === 0) {
+      alert("❌ Please upload at least one image");
       return;
     }
 
@@ -45,11 +52,11 @@ const SellPage = () => {
     try {
       const data = new FormData();
 
-      Object.keys(formData).forEach((key) => {
-        if (key !== "image") data.append(key, formData[key]);
-      });
+      // Append form fields
+      Object.keys(formData).forEach((key) => data.append(key, formData[key]));
 
-      data.append("image", formData.image); // multer field
+      // Append all images
+      images.forEach((img) => data.append("images", img));
 
       const response = await fetch("http://localhost:8080/sell", {
         method: "POST",
@@ -60,6 +67,7 @@ const SellPage = () => {
 
       alert("✅ Car listed successfully!");
 
+      // Reset form
       setFormData({
         carMake: "",
         carModel: "",
@@ -71,11 +79,9 @@ const SellPage = () => {
         contactName: "",
         email: "",
         phone: "",
-        image: null,
       });
-
-      setPreview(null);
-
+      setImages([]);
+      setPreviews([]);
     } catch (err) {
       console.error(err);
       alert("❌ Something went wrong!");
@@ -95,12 +101,11 @@ const SellPage = () => {
           <div className="bg-gradient-to-r from-green-500 to-emerald-700 text-white p-6 text-center">
             <h2 className="text-3xl font-bold">Sell Your Car</h2>
             <p className="text-sm opacity-90 mt-1">
-              Upload your car details with image
+              Upload your car details with multiple images
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-
             {/* Car Info */}
             <div>
               <h3 className="text-xl font-semibold text-green-700 border-b pb-2 mb-4">
@@ -133,25 +138,32 @@ const SellPage = () => {
                   className="md:col-span-2 p-3 border rounded"
                 />
 
-                {/* Image Upload */}
+                {/* Multiple Image Upload */}
                 <div className="md:col-span-2">
-                  <label className="font-semibold">Upload Car Image *</label>
+                  <label className="font-semibold">Upload Car Images *</label>
                   <input
                     type="file"
-                    name="image"
+                    multiple
                     accept="image/*"
-                    onChange={handleImageChange}
-                    required
+                    onChange={handleImagesChange}
                     className="mt-2 w-full p-2 border rounded"
                   />
 
-                  {preview && (
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      className="mt-4 h-40 object-cover rounded-lg border"
-                    />
-                  )}
+                  {/* Preview images */}
+                  <div className="flex flex-wrap mt-4 gap-2">
+                    {previews.map((src, index) => (
+                      <div key={index} className="relative">
+                        <img src={src} alt={`Preview ${index}`} className="h-28 w-28 object-cover rounded-lg border" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-2 py-1 text-xs"
+                        >
+                          X
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,7 +190,6 @@ const SellPage = () => {
             >
               {isSubmitting ? "Submitting..." : "Submit Listing"}
             </button>
-
           </form>
         </div>
       </div>

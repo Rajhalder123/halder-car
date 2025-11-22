@@ -17,6 +17,7 @@ import PrivateRoute from "./context/PrivateRoute";
 import CarDekho from "./pages/CarDekho";
 import ConfirmPurchase from "./pages/PurchaseConfirmation";
 import BuyNow from "./pages/BuyNow";
+import ListedCars from "./pages/ListedCar";
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/listed-cars" element={<ListedCars />} />
+
         <Route path="/car/:id" element={<CarDetails />} />
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/navbar" element={<Navbar />} />
