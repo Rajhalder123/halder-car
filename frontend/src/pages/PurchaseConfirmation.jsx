@@ -12,7 +12,7 @@ const ConfirmPurchase = () => {
     // ✅ Save confirmation to MongoDB (optional but recommended if not saved already)
     const saveConfirmation = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/confirm", {
+        const response = await fetch("https://car-backend-1-kjvq.onrender.com/api/confirm", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -49,7 +49,7 @@ const EcoFriendlyCars = () => {
   const handleSubmitBooking = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/buy", {
+      const response = await fetch("https://car-backend-1-kjvq.onrender.com/buy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...formData, carId: selectedCar.id, carName: selectedCar.name })

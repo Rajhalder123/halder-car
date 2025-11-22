@@ -23,24 +23,112 @@
   },
   {
     "id": 3,
-    "name": "Nissan Leaf",
-    "brand": "Nissan",
-    "type": "Hatchback",
+    "name": "Hyundai Ioniq 5",
+    "brand": "Hyundai",
+    "type": "Electric Cars",
     "fuel": "Electric",
-    "range": "149 miles",
-    "price": "$28,040",
-    "rating": 4.3,
-    "imgSrc": "/assets/img/nissan-leaf.png"
+    "range": "303 miles",
+    "price": "$41,450",
+    "rating": 4.6,
+    "imgSrc": "/assets/img/ioniq.jpg"
   },
   {
     "id": 4,
-    "name": "Toyota Prius",
-    "brand": "Toyota",
-    "type": "Hybrid",
-    "fuel": "Hybrid",
-    "range": "56 MPG",
-    "price": "$27,450",
+    "name": "MG Cyberster",
+    "brand": "Morris Garages",
+    "type": "Convertible",
+    "fuel": "Electric",
+    "range": "310 miles",
+    "price": "$65,000",
     "rating": 4.7,
-    "imgSrc": "/assets/img/toyota-prius.png"
+    "imgSrc": "/assets/img/mg.jpg"
+  },
+  {
+    "id": 5,
+    "name": "MG Comet EV",
+    "brand": "Morris Garages",
+    "type": "Hatchback",
+    "fuel": "Electric",
+    "range": "143 miles",
+    "price": "$9,999",
+    "rating": 4.2,
+    "imgSrc": "/assets/img/mg1.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Ford Mustang Mach-E",
+    "brand": "Ford",
+    "type": "SUVs",
+    "fuel": "Electric",
+    "range": "300 miles",
+    "price": "$42,995",
+    "rating": 4.6,
+    "imgSrc": "/assets/img/Ford1.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Kia EV6",
+    "brand": "Kia",
+    "type": "Electric Cars",
+    "fuel": "Electric",
+    "range": "310 miles",
+    "price": "$47,000",
+    "rating": 4.7,
+    "imgSrc": "/assets/img/kia1-ev6.jpg"
+  },
+  {
+    "id": 8,
+    "name": "Audi Q4 e-tron",
+    "brand": "Audi",
+    "type": "SUVs",
+    "fuel": "Electric",
+    "range": "265 miles",
+    "price": "$49,800",
+    "rating": 4.8,
+    "imgSrc": "/assets/img/q4-etron.jpg"
+  },
+  {
+    "id": 9,
+    "name": "Mercedes-Benz EQC",
+    "brand": "Mercedes-Benz",
+    "type": "SUVs",
+    "fuel": "Electric",
+    "range": "279 miles",
+    "price": "$67,900",
+    "rating": 4.8,
+    "imgSrc": "/assets/img/eqc.jpg"
+  },
+  {
+    "id": 10,
+    "name": "Honda Civic",
+    "brand": "Honda",
+    "type": "Sedans",
+    "fuel": "Petrol",
+    "range": "36 MPG",
+    "price": "$24,050",
+    "rating": 4.4,
+    "imgSrc": "/assets/img/civic.jpg"
+  },
+  {
+    "id": 11,
+    "name": "Tata Nexon EV",
+    "brand": "Tata",
+    "type": "Electric Cars",
+    "fuel": "Electric",
+    "range": "325 km",
+    "price": "$18,000",
+    "rating": 4.5,
+    "imgSrc": "/assets/img/nexon-ev.jpg"
+  },
+  {
+    "id": 12,
+    "name": "Mahindra XUV400",
+    "brand": "Mahindra",
+    "type": "Electric Cars",
+    "fuel": "Electric",
+    "range": "375 km",
+    "price": "$19,000",
+    "rating": 4.4,
+    "imgSrc": "/assets/img/xuv400.jpg"
   }
 ]

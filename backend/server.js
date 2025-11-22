@@ -1,49 +1,53 @@
 require("dotenv").config(); // Load environment variables
+
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors"); // Allow cross-origin requests
-const bodyParser = require("body-parser");
+const cors = require("cors");
+const path = require("path");
 
 // Routers
 const AuthRouter = require("./Routes/AuthRouter");
-const SellCarRouter = require('./Routes/SellCarRoute');
-const ProductRouter = require('./Routes/ProductRouter');
-const BuyCarRouter = require('./Routes/BuyCarRoute'); // ✅ New route
+const SellCarRouter = require("./Routes/SellCarRoute");
+const ProductRouter = require("./Routes/ProductRouter");
+const BuyCarRouter = require("./Routes/BuyCarRoute");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 const mongo_url = process.env.MONGO_CONN;
 
-// Check for MongoDB connection string
+// Check MongoDB connection string
 if (!mongo_url) {
-    console.error("Error: MONGO_CONN environment variable is not defined!");
-    process.exit(1); // Exit the application
+  console.error("Error: MONGO_CONN environment variable is not defined!");
+  process.exit(1);
 }
 
-// MongoDB Connection
+// Connect to MongoDB
 mongoose
-    .connect(mongo_url)
-    .then(() => console.log("MongoDB connected..."))
-    .catch((err) => {
-        console.error("MongoDB connection error:", err);
-        process.exit(1);
-    });
+  .connect(mongo_url)
+  .then(() => console.log("✅ MongoDB connected..."))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
 
-// Middleware
+// ✅ Middleware (DO NOT use bodyParser.json here)
 app.use(cors());
-app.use(bodyParser.json());
-app.use(express.json());
+app.use(express.json()); // OK for normal JSON routes
+
+// ✅ Static folder for uploaded images
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.get("/ping", (req, res) => {
-    res.send("PO");
+  res.send("Server working ✅");
 });
-app.use("/auth", AuthRouter); 
-app.use("/sell", SellCarRouter); 
+
+app.use("/auth", AuthRouter);
+app.use("/sell", SellCarRouter);
 app.use("/products", ProductRouter);
 app.use("/buy", BuyCarRouter);
 
-// Start the server
+// Start server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });

@@ -43,6 +43,7 @@ const SignInPage = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Password confirmation check
     if (isSignUp && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       setLoading(false);
@@ -50,13 +51,15 @@ const SignInPage = () => {
     }
 
     try {
+      // Backend URLs
       const url = isSignUp
         ? "https://car-backend-1-kjvq.onrender.com/auth/signup"
         : "https://car-backend-1-kjvq.onrender.com/auth/login";
 
+      // Body payload
       const body = isSignUp
         ? {
-            name: formData.firstName.trim() + " " + formData.lastName.trim(),
+            name: `${formData.firstName.trim()} ${formData.lastName.trim()}`.trim(),
             email: formData.email,
             password: formData.password,
           }
@@ -65,11 +68,20 @@ const SignInPage = () => {
             password: formData.password,
           };
 
+      // Show user a message if backend is slow (Render free tier wake-up)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        alert("Server is waking up... Please wait a few seconds ⏳");
+      }, 4000);
+
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       let data;
       try {
@@ -88,18 +100,20 @@ const SignInPage = () => {
         );
 
         if (!isSignUp && data.token) {
+          // Save token and user info
           localStorage.setItem("authToken", data.token);
           localStorage.setItem("userEmail", data.email);
           localStorage.setItem("userName", data.name);
-          
 
+          // Navigate smoothly without reload
+          navigate("/", { replace: true });
+          // Reload the page after a short delay to reflect login
           setTimeout(() => {
             window.location.reload();
-          }, 100);
-
-          navigate("/");
+          }, 50); // 100ms delay is enough
         }
 
+        // Reset form
         setFormData({
           email: "",
           password: "",
@@ -111,9 +125,11 @@ const SignInPage = () => {
 
         if (isSignUp) setIsSignUp(false);
       } else {
-        alert(data.message || (isSignUp ? "Sign up failed" : "Sign in failed"));
+        console.error("Backend error:", data);
+        alert(data.message || "Authentication failed. Please try again.");
       }
     } catch (error) {
+      console.error("Network error:", error);
       alert("Network error: " + error.message);
     } finally {
       setLoading(false);

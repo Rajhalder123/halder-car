@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import CarSlider from "../components/carSlider";
 import { NavLink } from "react-router-dom";
-// ✅ All Cars Data (With Brand)
+import { Search } from "lucide-react";
+
+// ==========================
+// 🚗 All Cars Data
+// ==========================
 const allCars = [
   {
     id: 1,
@@ -34,12 +38,11 @@ const allCars = [
   },
   {
     id: 5,
-     name: "MG Comet EV",
-     brand: "Morris Garages",
-     type: "Electric Cars",
-     imgSrc: "/assets/img/mg1.jpg",
+    name: "MG Comet EV",
+    brand: "Morris Garages",
+    type: "Electric Cars",
+    imgSrc: "/assets/img/mg1.jpg",
   },
-  
   {
     id: 6,
     name: "Ford Mustang Mach-E",
@@ -91,9 +94,9 @@ const allCars = [
   },
 ];
 
-
-
-// ✅ Top Picks
+// ==========================
+// 🌿 Top Eco Picks
+// ==========================
 const ecoCars = [
   {
     id: 1,
@@ -124,17 +127,24 @@ const ecoCars = [
   },
 ];
 
+// ==========================
+// 🏠 Home Component
+// ==========================
 const Home = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [savedCars, setSavedCars] = useState(new Set());
   const [activeBrand, setActiveBrand] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const brands = ["All", ...new Set(allCars.map((car) => car.brand))];
 
-  const filteredCars =
-    activeBrand === "All"
-      ? allCars
-      : allCars.filter((car) => car.brand === activeBrand);
+  const filteredCars = allCars.filter((car) => {
+    const matchesBrand = activeBrand === "All" || car.brand === activeBrand;
+    const matchesSearch =
+      car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      car.brand.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesBrand && matchesSearch;
+  });
 
   const toggleSave = (carId) => {
     setSavedCars((prev) => {
@@ -156,90 +166,108 @@ const Home = () => {
     >
       <Navbar />
 
-      {/*  HERO SECTION */}
-      <section
-        className="relative w-full min-h-screen bg-cover bg-center flex items-center justify-center px-4"
-        style={{ backgroundImage: "url('/assets/visualcar.png')" }}
-      >
-        <div className="absolute inset-0 bg-black/50 z-0"></div>
-        <div className="relative z-10 text-center text-white max-w-4xl p-6">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-md">
-            Drive <span className="text-green-400">Electric.</span>
-            <br />
-            Drive the <span className="text-green-400">Future.</span>
-          </h1>
-          <p className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mt-4">
-            Discover premium eco-friendly electric vehicles with expert guidance
-            and services.
-          </p>
+      {/* ================= HERO SECTION ================= */}
+ <section
+  className="relative w-full min-h-[90vh] bg-cover bg-center flex items-start justify-center px-4 pt-16 sm:pt-24"
+  style={{ backgroundImage: "url('/assets/visualcar.png')" }}
+>
+  {/* Dark overlay */}
+  <div className="absolute inset-0 bg-black/50 z-0"></div>
+
+  {/* Hero content moved up */}
+  <div className="relative z-10 text-center text-white max-w-4xl p-6 sm:p-10 md:p-12 rounded-lg">
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 leading-tight drop-shadow-md">
+      Drive <span className="text-green-400">Electric.</span>
+      <br />
+      Drive the <span className="text-green-400">Future.</span>
+    </h1>
+    <p className="text-base sm:text-lg text-gray-100 max-w-3xl mx-auto mt-4">
+      Discover premium eco-friendly electric vehicles with expert guidance and services.
+    </p>
+  </div>
+</section>
+
+
+
+      {/* ================= CARS FILTER SECTION ================= */}
+      <section className="py-12 bg-gray-50 text-center min-h-screen">
+        <h2 className="text-2xl font-bold mb-6">Browse by Brand</h2>
+
+        {/* Brand Buttons */}
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
+          {brands.map((brand) => (
+            <button
+              key={brand}
+              onClick={() => setActiveBrand(brand)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition ${
+                activeBrand === brand
+                  ? "bg-green-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {brand}
+            </button>
+          ))}
+        </div>
+        <>
+          {/* 🔍 Centered Stylish Search Bar */}
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center bg-white border-2 border-green-300 rounded-full px-4 py-2 shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-md">
+              <Search className="text-green-500 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search eco cars..."
+                className="ml-3 bg-transparent outline-none w-full text-sm text-gray-800 placeholder-gray-400"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </>
+
+        {/* Filtered Cars Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto">
+          {filteredCars.map((car) => (
+            <div
+              key={car.id}
+              className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 text-left"
+            >
+              <img
+                src={car.imgSrc}
+                alt={car.name}
+                className="w-full h-40 object-cover rounded"
+              />
+              <h3 className="mt-4 font-bold text-lg text-gray-800">
+                {car.name}
+              </h3>
+              <p className="text-sm text-gray-500">{car.brand}</p>
+              <p className="text-sm text-gray-600 mt-1">{car.type}</p>
+
+              <div className="flex gap-3 mt-3">
+                <NavLink
+                  to={`/car/${car.id}`}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
+                >
+                  View Details
+                </NavLink>
+                <NavLink
+                  to={`/buy/${car.id}`}
+                  className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
+                >
+                  Buy Now
+                </NavLink>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 
-     <section className="py-12 bg-gray-50 text-center min-h-screen">
-      <h2 className="text-2xl font-bold mb-6">Browse by Brand</h2>
-      <div className="flex flex-wrap justify-center gap-3 mb-6">
-        {brands.map((brand) => (
-          <button
-            key={brand}
-            onClick={() => setActiveBrand(brand)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-              activeBrand === brand
-                ? "bg-green-600 text-white"
-                : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-100"
-            }`}
-          >
-            {brand}
-          </button>
-        ))}
-      </div>
-
-      {/* ✅ Filtered Cars */}
-     {/* ✅ Filtered Cars */}
-<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4 max-w-6xl mx-auto">
-  {filteredCars.map((car) => (
-    <div
-      key={car.id}
-      className="bg-white rounded-lg shadow hover:shadow-lg transition p-4 text-left"
-    >
-      <img
-        src={car.imgSrc}
-        alt={car.name}
-        className="w-full h-40 object-cover rounded"
-      />
-      <h3 className="mt-4 font-bold text-lg text-gray-800">
-        {car.name}
-      </h3>
-      <p className="text-sm text-gray-500">{car.brand}</p>
-      <p className="text-sm text-gray-600 mt-1">{car.type}</p>
-
-      <div className="flex gap-3 mt-3">
-        {/* View Details Button */}
-        <NavLink
-          to={`/car/${car.id}`}
-          className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
-        >
-          View Details
-        </NavLink>
-
-        {/* Buy Now Button */}
-        <NavLink
-          to={`/buy/${car.id}`}
-          className="px-4 py-2 bg-green-600 text-white text-sm rounded hover:bg-green-700 transition"
-        >
-          Buy Now
-        </NavLink>
-      </div>
-    </div>
-  ))}
-</div>
-
-    </section>
-      {/*  CAR SLIDER */}
+      {/* ================= CAR SLIDER ================= */}
       <section className="bg-white py-12">
         <div className="max-w-6xl mx-auto px-4">
-         <h2 className="text-3xl font-extrabold text-center mb-10 bg-gradient-to-r from-green-500 to-emerald-700 bg-clip-text text-transparent">
-        🚗 Top Luxury & Eco-Friendly Cars
-      </h2>
+          <h2 className="text-3xl font-extrabold text-center mb-10 bg-gradient-to-r from-green-500 to-emerald-700 bg-clip-text text-transparent">
+            🚗 Top Luxury & Eco-Friendly Cars
+          </h2>
           <CarSlider
             cars={ecoCars}
             toggleSave={toggleSave}
@@ -248,7 +276,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* INNOVATION SECTION */}
+      {/* ================= INNOVATION SECTION ================= */}
       <section className="py-12 bg-green-50">
         <div className="max-w-5xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold mb-4">Innovation in Every Mile</h2>
@@ -258,7 +286,11 @@ const Home = () => {
           </p>
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              ["⚡", "Electric Powertrain", "Advanced electric tech with zero emissions."],
+              [
+                "⚡",
+                "Electric Powertrain",
+                "Advanced electric tech with zero emissions.",
+              ],
               ["🔋", "Long Range Battery", "Extended range for long journeys."],
               ["🛡️", "Safety First", "Top safety ratings and full protection."],
             ].map(([icon, title, desc], i) => (
@@ -272,24 +304,27 @@ const Home = () => {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-gr-900 text-black-600 py-12">
+      {/* ================= FOOTER ================= */}
+      <footer className="bg-gray-900 text-gray-300 py-12">
         <div className="max-w-6xl mx-auto px-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h3 className="text-xl font-bold mb-2">Drive by Raj</h3>
+            <h3 className="text-xl font-bold mb-2 text-white">Drive by Raj</h3>
             <p className="text-sm text-gray-400">
               India’s trusted name in sustainable mobility and driving
               education, empowering journeys since inception.
             </p>
           </div>
+
           {[
             ["Vehicles", ["Electric Cars", "Sedans", "Hatchbacks", "SUVs"]],
-            ["Services", ["Book Test Drive", "Service Booking", "Finance", "Insurance"]],
+            [
+              "Services",
+              ["Book Test Drive", "Service Booking", "Finance", "Insurance"],
+            ],
             ["Support", ["Customer Care", "Warranty", "Owner's Manual", "FAQ"]],
-          
           ].map(([title, links], i) => (
             <div key={i}>
-              <h4 className="font-semibold mb-2">{title}</h4>
+              <h4 className="font-semibold mb-2 text-white">{title}</h4>
               <ul className="space-y-1">
                 {links.map((link, j) => (
                   <li key={j}>
@@ -305,6 +340,7 @@ const Home = () => {
             </div>
           ))}
         </div>
+
         <div className="mt-10 border-t border-gray-700 pt-4 text-sm text-gray-500 text-center">
           <p>&copy; 2025 Drive by Raj. All rights reserved.</p>
           <p className="mt-1 text-xs">

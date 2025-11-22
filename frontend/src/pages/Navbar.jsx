@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { Leaf, Search } from "lucide-react";
 
-// ✅ All Cars Data (With Brand)
+// ✅ Car Data
 const allCars = [
   { id: 1, name: "Tesla Model S", brand: "Tesla", type: "Electric Cars", imgSrc: "/assets/img/tes.png" },
   { id: 2, name: "BMW i3", brand: "BMW", type: "Sedans", imgSrc: "/assets/img/bmw i3.png" },
@@ -22,7 +22,6 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,11 +29,9 @@ const Navbar = () => {
       const token = localStorage.getItem("authToken");
       setIsLoggedIn(!!token);
     };
-
     checkLogin();
     window.addEventListener("storage", checkLogin);
     window.addEventListener("login", checkLogin);
-
     return () => {
       window.removeEventListener("storage", checkLogin);
       window.removeEventListener("login", checkLogin);
@@ -51,11 +48,8 @@ const Navbar = () => {
   const closeNav = () => setIsNavOpen(false);
 
   const handleSellClick = () => {
-    if (isLoggedIn) {
-      navigate("/sell");
-    } else {
-      navigate("/signin");
-    }
+    if (isLoggedIn) navigate("/sell");
+    else navigate("/signin");
     closeNav();
   };
 
@@ -65,14 +59,21 @@ const Navbar = () => {
     { name: "Support", path: "/support" },
   ];
 
-  const filteredSuggestions = allCars.filter((car) =>
-    car.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSuggestions = allCars.filter(
+    (car) =>
+      car.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      car.brand.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const handleCarSelect = (car) => {
+    setSearchQuery("");
+    navigate(`/car/${car.id}`);
+  };
 
   return (
     <nav className="w-full sticky top-0 z-50 bg-white shadow-md transition-all duration-300">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo */}
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
+        {/* 🌿 Logo */}
         <NavLink
           to="/"
           className="flex items-center gap-2 text-[#00b894]"
@@ -84,20 +85,20 @@ const Navbar = () => {
           </span>
         </NavLink>
 
-        {/* 🔍 Search */}
-        <div className="hidden lg:flex flex-col relative ml-10 w-80">
-          <div className="flex items-center bg-white border-2 border-green-300 rounded-lg px-4 py-2 shadow-md">
+        {/* 🔍 Search (Visible on all screens) */}
+        <div className="flex flex-col relative w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg">
+          <div className="flex items-center bg-white border-2 border-green-300 rounded-lg px-3 py-2 shadow-md">
             <Search className="text-green-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search eco cars..."
-              className="ml-3 bg-transparent outline-none w-full text-sm text-gray-800"
+              className="ml-2 bg-transparent outline-none w-full text-sm text-gray-800"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          {/* 🔽 Search Dropdown */}
+          {/* 🔽 Dropdown */}
           {searchQuery && (
             <div className="absolute top-12 left-0 bg-white w-full border border-green-300 rounded-md shadow-xl z-50 max-h-64 overflow-y-auto">
               {filteredSuggestions.length > 0 ? (
@@ -105,10 +106,7 @@ const Navbar = () => {
                   <div
                     key={car.id}
                     className="flex items-center gap-3 px-4 py-2 hover:bg-green-50 cursor-pointer"
-                    onClick={() => {
-                      setSearchQuery(car.name);
-                      // You can also navigate to a car details page if needed
-                    }}
+                    onClick={() => handleCarSelect(car)}
                   >
                     <img
                       src={car.imgSrc}
@@ -122,13 +120,15 @@ const Navbar = () => {
                   </div>
                 ))
               ) : (
-                <div className="px-4 py-2 text-gray-500 text-sm">No results found</div>
+                <div className="px-4 py-2 text-gray-500 text-sm">
+                  No results found
+                </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Hamburger (Mobile) */}
+        {/* 🍔 Hamburger (Mobile) */}
         <button
           className="md:hidden flex flex-col gap-[3px] p-2 rounded border border-gray-300"
           onClick={toggleNav}
@@ -138,7 +138,7 @@ const Navbar = () => {
           ))}
         </button>
 
-        {/* Desktop Nav */}
+        {/* 💻 Desktop Navigation */}
         <ul className="hidden md:flex gap-6 items-center text-sm font-medium text-gray-700">
           {navItems.map(({ name, path }) => (
             <li key={name}>
@@ -146,7 +146,9 @@ const Navbar = () => {
                 to={path}
                 className={({ isActive }) =>
                   `transition-colors hover:text-green-600 ${
-                    isActive ? "text-green-600 font-semibold border-b-2 border-green-500" : ""
+                    isActive
+                      ? "text-green-600 font-semibold border-b-2 border-green-500"
+                      : ""
                   }`
                 }
               >
@@ -164,10 +166,7 @@ const Navbar = () => {
               </li>
               <li>
                 <button
-                  onClick={() => {
-                    handleLogout();
-                    closeNav();
-                  }}
+                  onClick={handleLogout}
                   className="text-red-500 hover:underline"
                 >
                   Logout
@@ -193,7 +192,7 @@ const Navbar = () => {
         </ul>
       </div>
 
-      {/* Mobile Nav */}
+      {/* 📱 Mobile Navigation */}
       {isNavOpen && (
         <div className="md:hidden px-4 pb-4 transition-all duration-300">
           <ul className="flex flex-col gap-3 text-gray-700 font-medium">
